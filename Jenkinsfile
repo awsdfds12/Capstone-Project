@@ -42,7 +42,7 @@ pipeline {
         }
         stage('Deploy Docker Container') {
             steps {
-                sh 'sudo docker run -itd -p 8084:8081 krishtonnaik1/dev:latest'
+                sh 'sudo docker run -itd -p 80:5000 krishtonnaik1/dev:latest'
             }
         }
     }
