@@ -4,6 +4,11 @@ pipeline {
         nodejs 'nodejs'
     }
     stages {
+        stage('Start Docker Service') {
+            steps {
+                sh 'sudo service docker start'
+            }
+        }
         stage('checkout') {
             steps {
                 git url:'https://github.com/awsdfds12/Capstone-Project.git'
@@ -30,17 +35,15 @@ pipeline {
         stage('Docker login') {
             steps {
                  withCredentials([string(credentialsId: 'dock-password', variable: 'dockerHubPassword')]) {
-                    sh "${dockerCMD} login -u krishtonnaik1 -p ${dockerHubPassword}"
-                    sh "${dockerCMD} push krishtonnaik1/dev:latest"
+                    sh "docker login -u krishtonnaik1 -p ${dockerHubPassword}"
+                    sh "docker push krishtonnaik1/dev:latest"
                 }
             }
         }
-        stage('Start Docker Service') {
-                sh 'sudo service docker start'
-        }
-
-    stage('Deploy Docker Container') {
+        stage('Deploy Docker Container') {
+            steps {
                 sh 'sudo docker run -itd -p 8084:8081 krishtonnaik1/dev:latest'
+            }
         }
     }
 }
