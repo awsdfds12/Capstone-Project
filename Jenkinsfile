@@ -24,26 +24,23 @@ pipeline {
         stage('Build Image') {
             steps {
                 sh 'docker build -t reactimage .'
-                sh 'docker tag reactimage:latest akshu20791/dev:latest'
+                sh 'docker tag reactimage:latest krishtonnaik1/dev:latest'
             }
         }
         stage('Docker login') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockercred', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                    sh "echo $PASS | docker login -u $USER --password-stdin"
-                    sh 'docker push akshu20791/dev:latest'
+                 withCredentials([string(credentialsId: 'dock-password', variable: 'dockerHubPassword')]) {
+                    sh "${dockerCMD} login -u krishtonnaik1 -p ${dockerHubPassword}"
+                    sh "${dockerCMD} push krishtonnaik1/dev:latest"
                 }
             }
         }
-        stage('Deploy') {
-            steps {
-                script {
-                    def dockerCmd = 'docker run -itd --name My-first-container -p 80:5000 akshu20791/dev:latest'
-                    sshagent(['sshkeypair']) {
-                        sh "ssh -o StrictHostKeyChecking=no ubuntu@51.20.192.244 ${dockerCmd}"
-                    }
-                }
-            }
+        stage('Start Docker Service') {
+                sh 'sudo service docker start'
+        }
+
+    stage('Deploy Docker Container') {
+                sh 'sudo docker run -itd -p 8084:8081 krishtonnaik1/dev:latest'
         }
     }
 }
