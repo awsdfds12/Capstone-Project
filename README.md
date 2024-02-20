@@ -66,3 +66,25 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 ### `npm run build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+
+
+Open a terminal.
+Type sudo visudo to open the sudoers file.
+Find the section that looks like this:
+# User privilege specification
+root    ALL=(ALL:ALL) ALL
+
+Below this, add a line for the Jenkins user to have passwordless sudo access. Replace jenkins with the username that Jenkins is running under:
+jenkins ALL=(ALL:ALL) NOPASSWD: ALL
+
+Save and exit the file.
+This will allow the Jenkins user to run sudo commands without being prompted for a password. However, be aware that this could be a security risk if the Jenkins user is compromised, as it would allow an attacker to run arbitrary sudo commands.
+
+Another solution is to use the jenkins user to run the Docker commands without sudo. This can be done by adding the jenkins user to the docker group. Here’s how:
+
+Open a terminal.
+Add the jenkins user to the docker group:
+sudo usermod -aG docker jenkins
+
+Restart the Jenkins service:
+sudo service jenkins restart
